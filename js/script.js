@@ -1,4 +1,5 @@
-alert('wefwe');
+console.log('script loaded');
+
 var game = {
     container: null,
     grid: [],
@@ -8,6 +9,7 @@ var game = {
 }
 
 function main(row, col) {
+    console.log('main called');
     var container = document.createElement('div');
     container.id = 'container';
     for(i = 0; i < row; i++) {
@@ -22,8 +24,8 @@ function main(row, col) {
     }
 
     game.container = container;
-    alert(':(');
     document.body.appendChild(container);
+    console.log('container appended');
 
     var grid_row = [];
     for(j = 0; j < col; j++) {
@@ -32,7 +34,7 @@ function main(row, col) {
 
     for(i = 0; i < row; i++) {
         game.grid.push(grid_row);
-        grid.row = grid_row.slice();
+        game.grid.row = grid_row.slice();
     }
 
     generate(game.bombs);
@@ -44,7 +46,7 @@ function generate(bombs) {
     for(i = 0; i < bombs; i++) {
         row_index = Math.floor(Math.random() * game.rows);
         col_index = Math.floor(Math.random() * game.cols);
-        
+	console.log(row_index, col_index); 
         if(game.grid[row_index][col_index] !== -1) { 
             game.grid[row_index][col_index] = -1;
         } else {
@@ -57,7 +59,7 @@ function generate(bombs) {
     //Testing to make sure there are the right number of bombs
     counter = 0;
     for(i = 0; i < game.rows; i++) {
-        for(j = 0; j , game.cols; j++) {
+        for(j = 0; j < game.cols; j++) {
             if(game.grid[i][j] === -1) {
                 counter++;
             }
@@ -75,7 +77,7 @@ function generate(bombs) {
     }
 }
 
-window.onload = main(game.rows, game.cols);
+window.onload = main.bind(null, game.rows, game.cols);
 
 
 
