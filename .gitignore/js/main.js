@@ -1,3 +1,0 @@
-function createBoard(row, col) {
-
-}

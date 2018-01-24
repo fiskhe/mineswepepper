@@ -10,8 +10,6 @@ var game = {
 function main(row, col) {
     var container = document.createElement('div');
     container.id = 'container';
-
-    return;
     for(i = 0; i < row; i++) {
         var row_div = document.createElement('div');
         row_div.classname = 'row';
@@ -24,6 +22,7 @@ function main(row, col) {
     }
 
     game.container = container;
+    alert(':(');
     document.body.appendChild(container);
 
     var grid_row = [];
@@ -33,7 +32,7 @@ function main(row, col) {
 
     for(i = 0; i < row; i++) {
         game.grid.push(grid_row);
-        grid+row = grid_row.slice();
+        grid.row = grid_row.slice();
     }
 
     generate(game.bombs);
@@ -66,9 +65,9 @@ function generate(bombs) {
     }
     console.log(counter);
     
-    for(i = -; i < game.rows; i++) {
+    for(i = 0; i < game.rows; i++) {
         var row_nl = game.container.children[i].children;
-        for(j = -; j < game.cols; j++_ {
+        for(j = 0; j < game.cols; j++) {
             if(game.grid[i][j] == -1) {
                 row_nl[j].innerHTML = '-1';
             }
@@ -76,7 +75,7 @@ function generate(bombs) {
     }
 }
 
-main(game.rows, game.cols);
+window.onload = main(game.rows, game.cols);
 
 
 
