@@ -1,0 +1,20 @@
+#container {
+    color: gray;
+}
+
+.square {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+    border-color: orange;
+    border-style: solid;
+    position: relative;
+    display: inline-block;
+    float: left;
+    text-align: center;
+}
+
+.row {
+    position: relative;
+    clear: both;
+}
