@@ -14,7 +14,7 @@ function main(row, col) {
     container.id = 'container';
     for(i = 0; i < row; i++) {
         var row_div = document.createElement('div');
-        row_div.classname = 'row';
+        row_div.className = 'row';
         for(j = 0; j < col; j++) {
             var square = document.createElement('div');
             square.className = 'square';
@@ -34,27 +34,29 @@ function main(row, col) {
 
     for(i = 0; i < row; i++) {
         game.grid.push(grid_row);
-        game.grid.row = grid_row.slice();
+        grid_row = grid_row.slice();
     }
 
+    alert(JSON.stringify(game.grid));
     generate(game.bombs);
 } 
 
 //Generates the number of bombs given on the minesweeper grid
 //Currently generates randomly
 function generate(bombs) {
+    
+    // Putting the data into the BTS
     for(i = 0; i < bombs; i++) {
-        row_index = Math.floor(Math.random() * game.rows);
-        col_index = Math.floor(Math.random() * game.cols);
-	console.log(row_index, col_index); 
+
+        var row_index = Math.floor(Math.random() * game.rows);
+        var col_index = Math.floor(Math.random() * game.cols);
+
         if(game.grid[row_index][col_index] !== -1) { 
             game.grid[row_index][col_index] = -1;
         } else {
             i = i - 1;
         }
     }
-    
-    console.log(game.grid);
     
     //Testing to make sure there are the right number of bombs
     counter = 0;
@@ -66,7 +68,9 @@ function generate(bombs) {
         }
     }
     console.log(counter);
+    alert(counter);
     
+    // Putting the data into the DOM
     for(i = 0; i < game.rows; i++) {
         var row_nl = game.container.children[i].children;
         for(j = 0; j < game.cols; j++) {
@@ -75,6 +79,10 @@ function generate(bombs) {
             }
         }
     }
+}
+
+// Is not recursive. Only copies 2D arrays.
+function deepCopy(arr) {
 }
 
 window.onload = main.bind(null, game.rows, game.cols);
