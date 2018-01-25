@@ -153,6 +153,8 @@ function toWord(num) {
 	    return 'seven';
 	case 8:
 	    return 'eight';
+	case -1:
+	    return 'bomb';
 	default:
 	    return;
     }

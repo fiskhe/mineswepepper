@@ -12,6 +12,8 @@
     display: inline-block;
     float: left;
     text-align: center;
+    font-family: Arial;
+    font-weight: bold;
 }
 
 .row {
@@ -19,6 +21,10 @@
     display: inline-block;
     float: left;
     clear: both;
+}
+
+.bomb {
+    background-color: black;
 }
 
 .one {
