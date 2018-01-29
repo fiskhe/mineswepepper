@@ -1,11 +1,13 @@
 console.log('script loaded');
+alert('wefe');
 
 var game = {
     container: null,
     grid: [],
     bombs: 99,
     rows: 16,
-    cols: 30
+    cols: 30,
+    real_player: true
 }
 
 window.onload = main.bind(null, game.rows, game.cols);
@@ -114,7 +116,7 @@ function updateDOM() {
         for(j = 0; j < game.cols; j++) {
 	    var square_val = game.grid[i][j];
             if(square_val !== 0) {
-		row_nl[j].classList.add(toWord(square_val));
+		row_nl[j].classList.add(toWord(square_val), 'uncovered');
                 row_nl[j].innerHTML = square_val;
             }
         }
