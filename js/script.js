@@ -1,5 +1,9 @@
 console.log('script loaded');
-alert('wefe');
+var testing = false;
+var alertson = true;
+
+if(!alertson)
+    window.alert = function() {};
 
 var game = {
     container: null,
@@ -22,6 +26,8 @@ function main(row, col) {
         for(j = 0; j < col; j++) {
             var square = document.createElement('div');
             square.className = 'square';
+            square.id = i + '|' + j;
+            square.addEventListener('click', uncover);
             row_div.appendChild(square);
         }
         container.appendChild(row_div);
@@ -44,7 +50,8 @@ function main(row, col) {
     generateBombs(game.bombs);
     generateNums();
 
-    updateDOM();
+    if(testing)
+        updateDOM();
 } 
 
 //Generates the number of bombs given on the minesweeper grid
@@ -64,7 +71,7 @@ function generateBombs(bombs) {
     }
     
     //Testing to make sure there are the right number of bombs
-    counter = 0;
+    var counter = 0;
     for(i = 0; i < game.rows; i++) {
         for(j = 0; j < game.cols; j++) {
             if(game.grid[i][j] === -1) {
@@ -94,7 +101,7 @@ function generateNums() {
 			    break;
 
 			// Has a precaution to stop from accessing undefined columns.
-			if (temp_grid[i - 1 + r][j - 1 + c] === -1 && j > 0 && j < game.cols-1) {
+			if (temp_grid[i - 1 + r][j - 1 + c] === -1) {
 			    num_bombs++;
 			}
 		    }
@@ -110,17 +117,66 @@ function generateNums() {
 
 // Putting the data into the DOM
 function updateDOM() {
+    alert('updating the DOM');
     for(i = 0; i < game.rows; i++) {
         var row_nl = game.container.children[i].children;
 
         for(j = 0; j < game.cols; j++) {
 	    var square_val = game.grid[i][j];
             if(square_val !== 0) {
-		row_nl[j].classList.add(toWord(square_val), 'uncovered');
+		row_nl[j].classList.add(toWord(square_val));
+                console.log(row_nl[j].classList);
                 row_nl[j].innerHTML = square_val;
             }
+
+            var state = 'covered';
+            if(testing)
+                state = 'uncovered';
+            row_nl[j].classList.add(state);
+            row_nl[j].addEventListener('click', uncover);
         }
     }
+}
+
+//TODO: endgame function...
+function uncover() {
+    if(this.classList.contains('uncovered')) {
+        return;
+    }
+        
+    console.log(this.id);
+    this.classList.add('uncovered');
+    var id = this.id;
+    var coord = this.id.split('|');
+    var row = coord[0];
+    var col = coord[1];
+    var value = game.grid[row][col];
+    this.classList.add(toWord(value));
+    this.innerHTML = value == 0 ? '' : value;
+
+    if(value == 0) {
+        for(var r = 0; r < 3; r++) {
+            if(row == 0)
+                break;
+
+            var row_nl = game.container.children[row - 1 + r].children;
+            for(var c = 0; c < 3; c++) {
+                var square = row_nl[col - 1 + c];
+
+                if(square != undefined && square != this) {
+                    uncover.apply(square);
+                } 
+            }
+        }
+    } else if(value == -1) {
+        //TODO
+    }
+    
+    this.innerHTML = value == 0 ? '' : value;
+}
+
+function flag() {
+    this.classList.add('flagged');
 }
 
 

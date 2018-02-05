@@ -1,7 +1,7 @@
 #container {
     position: absolute;
-    background-color: orange;
-    border-color: blue;
+    background-color: #d95400;
+    border-color: gray;
     border-style: solid;
     width: 720px;
     left: -360px;
@@ -21,6 +21,11 @@
     text-align: center;
     font-family: Arial;
     font-weight: bold;
+}
+
+.covered {
+    visibility: hidden;
+    background-color: red;
 }
 
 .uncovered {
