@@ -1,4 +1,5 @@
 console.log('script loaded');
+
 var testing = false;
 var alertson = true;
 
@@ -28,6 +29,7 @@ function main(row, col) {
             square.className = 'square';
             square.id = i + '|' + j;
             square.addEventListener('click', uncover);
+            square.addEventListener('contextmenu', toggleFlag);
             row_div.appendChild(square);
         }
         container.appendChild(row_div);
@@ -115,29 +117,6 @@ function generateNums() {
     alert(game.grid);
 }
 
-// Putting the data into the DOM
-function updateDOM() {
-    alert('updating the DOM');
-    for(i = 0; i < game.rows; i++) {
-        var row_nl = game.container.children[i].children;
-
-        for(j = 0; j < game.cols; j++) {
-	    var square_val = game.grid[i][j];
-            if(square_val !== 0) {
-		row_nl[j].classList.add(toWord(square_val));
-                console.log(row_nl[j].classList);
-                row_nl[j].innerHTML = square_val;
-            }
-
-            var state = 'covered';
-            if(testing)
-                state = 'uncovered';
-            row_nl[j].classList.add(state);
-            row_nl[j].addEventListener('click', uncover);
-        }
-    }
-}
-
 //TODO: endgame function...
 function uncover() {
     if(this.classList.contains('uncovered')) {
@@ -154,15 +133,18 @@ function uncover() {
     this.classList.add(toWord(value));
     this.innerHTML = value == 0 ? '' : value;
 
+    this.removeEventListener('contextmenu', toggleFlag);
+
     if(value == 0) {
         for(var r = 0; r < 3; r++) {
-            if(row == 0)
-                break;
 
             var row_nl = game.container.children[row - 1 + r].children;
             for(var c = 0; c < 3; c++) {
-                var square = row_nl[col - 1 + c];
+                // To stop from accessing row -1 and rows past the actual number of rows.
+                if(r == 0 && row == 0 || r == 2 && row == game.rows-1)
+                    break;
 
+                var square = row_nl[col - 1 + c];
                 if(square != undefined && square != this) {
                     uncover.apply(square);
                 } 
@@ -175,10 +157,19 @@ function uncover() {
     this.innerHTML = value == 0 ? '' : value;
 }
 
-function flag() {
-    this.classList.add('flagged');
+// Toggles the flagged state of an uncovered square
+function toggleFlag(e) {
+    // So that the normal right click menu doesn't show up
+    if(e != undefined)
+        e.preventDefault();
+    if(this.classList.contains('flagged')) {
+        this.addEventListener('click', uncover);
+        this.classList.remove('flagged');
+    } else {
+        this.removeEventListener('click', uncover);
+        this.classList.add('flagged');
+    }
 }
-
 
 // Is not recursive. Only copies 2D arrays.
 function deepCopy(arr) {
@@ -218,7 +209,28 @@ function toWord(num) {
     }
 }
 
+// Putting the data into the DOM
+// Shows whole board -- only for testing!
+function updateDOM() {
+    alert('updating the DOM');
+    for(i = 0; i < game.rows; i++) {
+        var row_nl = game.container.children[i].children;
 
+        for(j = 0; j < game.cols; j++) {
+	    var square_val = game.grid[i][j];
+            if(square_val !== 0) {
+		row_nl[j].classList.add(toWord(square_val));
+                console.log(row_nl[j].classList);
+                row_nl[j].innerHTML = square_val;
+            }
 
+            var state = 'covered';
+            if(testing)
+                state = 'uncovered';
+            row_nl[j].classList.add(state);
+            row_nl[j].addEventListener('click', uncover);
+        }
+    }
+}
 
 
