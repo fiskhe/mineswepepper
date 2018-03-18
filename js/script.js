@@ -12,6 +12,7 @@ var game = {
     bombs: 99,
     rows: 16,
     cols: 30,
+    started: false,
     real_player: true
 }
 
@@ -19,6 +20,7 @@ window.onload = main.bind(null, game.rows, game.cols);
 
 function main(row, col) {
     console.log('main called');
+    // Generating the html board
     var container = document.createElement('div');
     container.id = 'container';
     for(i = 0; i < row; i++) {
@@ -52,10 +54,15 @@ function main(row, col) {
     generateBombs(game.bombs);
     generateNums();
 
-    if(testing)
-        updateDOM();
+    if(testing) {
+        // updateDOM();
+        showEmptySquares();
+    }
 } 
 
+function startGame() {
+
+}
 //Generates the number of bombs given on the minesweeper grid
 //Currently generates randomly
 function generateBombs(bombs) {
@@ -113,48 +120,82 @@ function generateNums() {
 	    }
 	}
     }
-    
-    alert(game.grid);
+    // alert(game.grid);
 }
 
 //TODO: endgame function...
-function uncover() {
-    if(this.classList.contains('uncovered')) {
+function uncover(e, around = false) {
+    if(!game.started) {
+        startGame.apply(this);
+    } else if(this.classList.contains('uncovered')) {
+        // alert('this else if...');
         return;
     }
-        
+
     console.log(this.id);
     this.classList.add('uncovered');
-    var id = this.id;
-    var coord = this.id.split('|');
-    var row = coord[0];
-    var col = coord[1];
+    var coords = getCoords(this);
+    var row = coords[0];
+    var col = coords[1];
     var value = game.grid[row][col];
     this.classList.add(toWord(value));
     this.innerHTML = value == 0 ? '' : value;
 
     this.removeEventListener('contextmenu', toggleFlag);
 
-    if(value == 0) {
+    if(value == 0 || around) {
         for(var r = 0; r < 3; r++) {
-
+            if(r == 0 && row == 0 || r == 2 && row == game.rows-1) {
+                continue;
+            }
             var row_nl = game.container.children[row - 1 + r].children;
             for(var c = 0; c < 3; c++) {
                 // To stop from accessing row -1 and rows past the actual number of rows.
-                if(r == 0 && row == 0 || r == 2 && row == game.rows-1)
-                    break;
-
                 var square = row_nl[col - 1 + c];
-                if(square != undefined && square != this) {
+                if(square != undefined && square != this && !square.classList.contains('flagged')) {
                     uncover.apply(square);
                 } 
             }
         }
+    } else if(value > 0) {
+        this.addEventListener('contextmenu', uncoverAround);
     } else if(value == -1) {
         //TODO
     }
     
     this.innerHTML = value == 0 ? '' : value;
+}
+
+function uncoverAround(e) {
+    if(e != undefined)
+        e.preventDefault();
+
+    var id = this.id;
+    var coord = this.id.split('|');
+    var coords = getCoords(this);
+    var row = coord[0];
+    var col = coord[1];
+    var value = game.grid[row][col];
+    var num_flags = 0;
+
+    for(var r = 0; r < 3; r++) {
+        if(r == 0 && row == 0 || r == 2 && row == game.rows-1) {
+            continue;
+        }
+        var row_nl = game.container.children[row - 1 + r].children;
+        for(var c = 0; c < 3; c++) {
+            // To stop from accessing row -1 and rows past the actual number of rows.
+            var square = row_nl[col - 1 + c];
+            if(square != undefined && square != this) {
+                if(square.classList.contains('flagged')) {
+                    num_flags++;
+                }
+            } 
+        }
+    }
+    if(value == num_flags) {
+        uncover.apply(this, [null, true]);
+    }
 }
 
 // Toggles the flagged state of an uncovered square
@@ -209,6 +250,14 @@ function toWord(num) {
     }
 }
 
+function getCoords(square) {
+    var id = square.id;
+    var coord = square.id.split('|');
+    var row = coord[0];
+    var col = coord[1];
+    return [row, col]
+}
+
 // Putting the data into the DOM
 // Shows whole board -- only for testing!
 function updateDOM() {
@@ -233,4 +282,16 @@ function updateDOM() {
     }
 }
 
+function showEmptySquares() {
+    console.log('showing empty squares');
+    for(i = 0; i < game.rows; i++) {
+        var row_nl = game.container.children[i].children;
+        for(j = 0; j < game.cols; j++) {
+	    var square_val = game.grid[i][j];
+            if(square_val == 0) {
+                row_nl[j].classList.add('empty');
+            }
+        }
+    }
+}
 

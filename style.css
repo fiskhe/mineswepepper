@@ -66,3 +66,7 @@
 .five {
     color: purple;
 }
+
+.empty {
+    border-color: blue;
+}
